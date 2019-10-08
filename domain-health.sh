@@ -58,8 +58,7 @@ cat /tmp/vhostconf.docker.domainlist  |while read a ;do ( target="";type=${a/%@*
 if [ "$type" == "H" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1); http_stat=$(curl -sw '%{http_code}' https://$url -o /dev/null 2>&1);fi
 if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' $url -o /dev/null 2>&1); target=$(curl -Ls -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done
 wait
-
-; } ;
+ echo -n ; } ;
 
 
 _host_extract() {
@@ -80,7 +79,6 @@ _host_extract() {
 		
 		esac
 		test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
-		
 		echo -n ; } ;
 
 
