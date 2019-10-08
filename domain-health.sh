@@ -6,8 +6,6 @@
 test -f ~/.domainhealth.conf || (echo "NO CONFIG";exit 3 )
 . ~/.domainhealth.conf
 
-test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
-
 
 _vhost_extract_docker() { 
 ##gen list
@@ -64,7 +62,7 @@ wait
 ; } ;
 
 
-host_extract() {
+_host_extract() {
 	[ -z "$HOST_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
 		#websrvid=$(ls -l /proc/$(fuser 443/tcp 2>/dev/null|cut -f2|sed 's/ //g')/exe)
@@ -81,14 +79,16 @@ host_extract() {
 		              _vhost_extract_nginx ;;
 		
 		esac
+		test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
+		
 		echo -n ; } ;
 
 
 case "$1" in 
 	host )
 			#echo "server side";
-			host_extract ;;
+			_host_extract ;;
 	client )
 			#echo "client side";
-			
+			_websrv_health_client ;;
 esac
