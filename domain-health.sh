@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 #todo : git reset head ,  git directory 
 test -f ~/.domainhealth.conf || (echo "NO CONFIG";exit 3 )
 . ~/.domainhealth.conf
