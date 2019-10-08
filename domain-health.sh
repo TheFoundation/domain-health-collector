@@ -62,15 +62,13 @@ if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f
 }
 statusobject="$(statusgetter)"
 echo "$statusobject";
-
+status
 
 wait
  echo -n ; } ;
 
 _host_extract() {
 	[ -z "$HOST_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
-
-		#websrvid=$(ls -l /proc/$(fuser 443/tcp 2>/dev/null|cut -f2|sed 's/ //g')/exe)
 		websrvid=$(ls -l /proc/$(fuser 443/tcp 2>/dev/null|awk '{print $1}')/exe)
 		case "$websrvid" in
 		   *docker-proxy ) 
