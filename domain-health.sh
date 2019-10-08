@@ -29,7 +29,7 @@ _vhost_extract_apache() {
 						redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
 						ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker exec $host printenv SSH_PORT))
 						echo $redir"@"$host"@"$vhostfield"@"$ssh_port
-	done
+	done > /tmp/vhostconf.domainlist
 
 
 	}
@@ -42,7 +42,7 @@ _vhost_extract_nginx() {
 	redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
 	ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker exec $host printenv SSH_PORT))
 	echo $redir"@"$host"@"$vhostfield"@"$ssh_port
-done
+done > /tmp/vhostconf.domainlist
 echo ; } ;
 
 
@@ -79,6 +79,17 @@ _host_extract() {
 		
 		esac
 		test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
+		
+		test -f /tmp/domainlist-$(hostname -f) && ( 
+		cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist
+		test -d /tmp/domainlist-$(hostname -f)/.git && rm -rf /tmp/domainlist-$(hostname -f)/.git 
+		cd /tmp/domainlist-$(hostname -f); 
+		git init
+		git remote add origin $HOST_GIT_REPO
+		git add domainlist
+		git commit -am $(hostname -f)"domain list "$(date -u +%Y-%m-%d-%H.%M)
+		git push -f origin master
+		)
 		echo -n ; } ;
 
 
