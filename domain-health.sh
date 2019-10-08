@@ -61,7 +61,7 @@ if [ "$type" == "H" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f
 if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' $url -o /dev/null 2>&1); target=$(curl -Ls -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done 
 }
 statusobject="$(statusgetter)"
-echo $statusobject;
+echo "$statusobject";
 
 
 wait
