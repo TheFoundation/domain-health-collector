@@ -88,6 +88,7 @@ _host_extract() {
 		git remote add origin $HOST_GIT_REPO
 		git add domainlist
 		git commit -am $(hostname -f)"domain list "$(date -u +%Y-%m-%d-%H.%M)
+		git config user.name domainlist@$(hostname -f)
 		git push -f origin master
 		)
 		echo -n ; } ;
