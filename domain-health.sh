@@ -1,8 +1,12 @@
 #!/bin/bash
 
+
+
 #todo : git reset head ,  git directory 
 test -f ~/.domainhealth.conf || (echo "NO CONFIG";exit 3 )
-. 
+. ~/.domainhealth.conf
+
+test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
 
 
 _vhost_extract_docker() { 
@@ -45,6 +49,8 @@ echo ; } ;
 
 
 _websrv_health_client() { 
+ 	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
+
  
  #!! 500 ( internal server err) → contao no startpoint
  #!! 503 onlyoffice cant write
@@ -59,6 +65,8 @@ wait
 
 
 host_extract() {
+	[ -z "$HOST_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
+
 		#websrvid=$(ls -l /proc/$(fuser 443/tcp 2>/dev/null|cut -f2|sed 's/ //g')/exe)
 		websrvid=$(ls -l /proc/$(fuser 443/tcp 2>/dev/null|awk '{print $1}')/exe)
 		case "$websrvid" in
