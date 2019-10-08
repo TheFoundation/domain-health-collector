@@ -14,7 +14,8 @@ $(function () {
         name: 'grid', 
         method: 'GET', // need this to avoid 412 error on Safari
         columns: [                
-            { field: 'Type', caption: 'Vhost Type', size: '8%', sortable: true },
+            { field: 'type', caption: 'Vhost Type', size: '8%', sortable: true },
+            { field: 'status', caption: 'Status Code', size: '10%', sortable: true },
             { field: 'ssh', caption: 'ssh_port', size: '60px', sortable: true }
             { field: 'vhost', caption: 'VHOST', size: '30%', sortable: true },
             { field: 'alias', caption: 'Alternate Vhosts', size: '40%', sortable: true },
