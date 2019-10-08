@@ -55,13 +55,12 @@ test -d /tmp/.domain-health-lists/.git && ( cd /tmp/.domain-health-lists/ ; git 
  #!! 503 onlyoffice cant write
  #!! 503 Service Temporarily Unavailable
 #test status 
-cat $(find /tmp/.domain-health-lists/ -name domainlist)  |while read a ;do ( target="";type=${a/%@*/};
+find /tmp/.domain-health-lists/ -name domainlist|while read listfile;do cat "$listfile";done  |while read a ;do ( target="";type=${a/%@*/};
 if [ "$type" == "H" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1); http_stat=$(curl -sw '%{http_code}' https://$url -o /dev/null 2>&1);fi
 if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' $url -o /dev/null 2>&1); target=$(curl -Ls -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done
 
 wait
  echo -n ; } ;
-
 
 _host_extract() {
 	[ -z "$HOST_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
