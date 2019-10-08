@@ -49,16 +49,19 @@ echo ; } ;
 _websrv_health_client() { 
  	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
- 
+test -d /tmp/.domain-health-lists/.git || (rm -rf /tmp/.domain-health-lists/.git; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists)
+cd /tmp/.domain-health-lists/
+git pull --recurse-submodules
+
+
  #!! 500 ( internal server err) → contao no startpoint
  #!! 503 onlyoffice cant write
  #!! 503 Service Temporarily Unavailable
 #test status 
-cat /tmp/vhostconf.docker.domainlist  |while read a ;do ( target="";type=${a/%@*/};
+cat $(find /tmp/.domain-health-lists/ -name domainlist)  |while read a ;do ( target="";type=${a/%@*/};
 if [ "$type" == "H" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1); http_stat=$(curl -sw '%{http_code}' https://$url -o /dev/null 2>&1);fi
 if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' $url -o /dev/null 2>&1); target=$(curl -Ls -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done
-test -d /tmp/.domain-health-lists/.git || (rm -rf /tmp/.domain-health-lists/.git; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists)
-cd /tmp/.domain-health-lists/
+
 
 wait
  echo -n ; } ;
