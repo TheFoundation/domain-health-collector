@@ -47,9 +47,8 @@ echo ; } ;
 _websrv_health_client() { 
  	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
-test -d /tmp/.domain-health-lists/.git || (rm -rf /tmp/.domain-health-lists/.git; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists)
-cd /tmp/.domain-health-lists/
-git pull --recurse-submodules
+test -d /tmp/.domain-health-lists/.git && ( cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-lists/.git; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ; git submodule update --init --recursive)
+
 
 
  #!! 500 ( internal server err) → contao no startpoint
