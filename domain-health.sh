@@ -80,7 +80,7 @@ _host_extract() {
 		esac
 		test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
 		
-		test -f /tmp/domainlist-$(hostname -f) && ( 
+		test -d /tmp/domainlist-$(hostname -f) && ( 
 		cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist
 		test -d /tmp/domainlist-$(hostname -f)/.git && rm -rf /tmp/domainlist-$(hostname -f)/.git 
 		cd /tmp/domainlist-$(hostname -f); 
