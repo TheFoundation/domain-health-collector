@@ -62,7 +62,7 @@ if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f
 }
 statusobject="$(statusgetter)"
 echo $statusobject;
-)
+
 
 wait
  echo -n ; } ;
