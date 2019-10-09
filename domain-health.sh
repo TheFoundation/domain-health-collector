@@ -10,7 +10,7 @@ _vhost_extract_docker() {
  containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer|grep "\." ) ; 
  #docker exec $i printenv SSH_PORT
  webcontainers=$(for i in $containers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i) ; echo $imagetype |grep -q -e ^mariadb -e _cron$ -e memcached -e _database -e piwik-cron -e nginx-gen -e nginx-letsencrypt -e nginx-proxy && (echo will not proc $i"     "  >&2)|| ( echo -en "$i ";) ; done)
- (for i in $webcontainers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i)  ;echo $imagetype | grep -q nginx-redirect && ( echo "R@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@@"$(docker exec $i printenv SERVER_REDIRECT_SCHEME)"://"$(docker exec $i printenv SERVER_REDIRECT)$(docker exec $i printenv SERVER_REDIRECT_PATH)) ||  ( echo "H@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@"$(docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $i | grep "22/tcp" |cut -d":" -f2)"@") ; done > /tmp/vhostconf.domainlist)
+ (for i in $webcontainers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i)  ;echo $imagetype | grep -q nginx-redirect && ( echo "R@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@@"$(docker exec $i printenv SERVER_REDIRECT_SCHEME)"://"$(docker exec $i printenv SERVER_REDIRECT)$(docker exec $i printenv SERVER_REDIRECT_PATH)) ||  ( echo "H@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@"$(docker port $i|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $i | grep "22/tcp" |cut -d":" -f2)"@") ; done > /tmp/vhostconf.domainlist)
  
 #cat /tmp/vhostconf.domainlist
 echo ; } ;
@@ -26,7 +26,7 @@ _vhost_extract_apache() {
 						vhosts=$(echo $cur_config | cut -d")" -f2-|grep -v ^$|cut -d":" -f2-|sed 's/:/,/g' )
 						vhostfield=$(echo $host","$vhosts|sed 's/,$//g')
 						redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
-						ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
+						ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
 						echo $redir"@"$host"@"$vhostfield"@"$ssh_port
 	done > /tmp/vhostconf.domainlist
 }
@@ -37,7 +37,7 @@ _vhost_extract_nginx() {
 	vhostfield=$(echo $vhosts|sed 's/ \+/ /g;s/ /,/g');
 	host=$(echo "$vhosts"|sed 's/ /\n/g'|grep -v "*"|head -n1);
 	redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
-	ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
+	ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
 	echo $redir"@"$host"@"$vhostfield"@"$ssh_port
 done > /tmp/vhostconf.domainlist
 echo ; } ;
