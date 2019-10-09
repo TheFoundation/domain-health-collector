@@ -77,7 +77,6 @@ echo -e "\t"']';echo '}';
 ) >  /tmp/.domainhealth-www/domainlist.json
 
 
-status
 
 wait
  echo -n ; } ;
