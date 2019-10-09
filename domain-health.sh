@@ -64,7 +64,7 @@ statusobject="$(statusgetter)"
 statuslength=$(echo "$statusobject"|wc -l)
 
 (
-#w2ui json init
+##w2ui json init
 count=1;
 echo '{';echo '"total":'${statuslength}",";echo '"records": [';
 #entry gen
@@ -108,7 +108,6 @@ _host_extract() {
 		git push -f origin master
 		)
 		echo -n ; } ;
-
 
 case "$1" in 
 	host )
