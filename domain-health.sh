@@ -45,7 +45,6 @@ _websrv_health_client() {
  	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
 #git submodule update --init --recursive 
-#git submodule update --init --recursive ;
 test -d /tmp/.domain-health-lists/.git && ( cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-lists/; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ;  git pull --recurse-submodules )
 for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git reset --hard origin/master;git pull ;done
 
