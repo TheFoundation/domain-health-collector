@@ -8,8 +8,8 @@ test -f ~/.domainhealth.conf || (echo "NO CONFIG";exit 3 )
 _vhost_extract_docker() { 
 ##gen list
  containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer|grep "\." ) ; 
- #
- webcontainers=$(for i in $containers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i) ; echo $imagetype |grep -q -e ^mariadb -e _cron$ -e memcached -e _database -e piwik-cron -e nginx-gen -e nginx-letsencrypt -e nginx-proxy && (echo will not proc $i"     "  >&2)|| ( echo -en "$i ";) ; done)docker exec $i printenv SSH_PORT
+ #docker exec $i printenv SSH_PORT
+ webcontainers=$(for i in $containers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i) ; echo $imagetype |grep -q -e ^mariadb -e _cron$ -e memcached -e _database -e piwik-cron -e nginx-gen -e nginx-letsencrypt -e nginx-proxy && (echo will not proc $i"     "  >&2)|| ( echo -en "$i ";) ; done)
  (for i in $webcontainers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i)  ;echo $imagetype | grep -q nginx-redirect && ( echo "R@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@@"$(docker exec $i printenv SERVER_REDIRECT_SCHEME)"://"$(docker exec $i printenv SERVER_REDIRECT)$(docker exec $i printenv SERVER_REDIRECT_PATH)) ||  ( echo "H@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@"$(docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $i | grep "22/tcp" |cut -d":" -f2)) ; done > /tmp/vhostconf.domainlist)
  
 #cat /tmp/vhostconf.domainlist
