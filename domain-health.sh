@@ -68,15 +68,12 @@ echo '{';echo '"total":'${statuslength}",";echo '"records": [';
 (
 count=1;
 echo "$statusobject" |while read entry;do 
-	echo '{ "recid": '${count}', "type": "'
 	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status: \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" },"}';
 	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
 	let count++;
 	done
 echo -e "\t"']';echo '}';
 ) >  /tmp/.domainhealth-www/domainlist.json
-
-
 
 wait
  echo -n ; } ;
