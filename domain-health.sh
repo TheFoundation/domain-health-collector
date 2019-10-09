@@ -9,7 +9,7 @@ _vhost_extract_docker() {
 ##gen list
  containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer|grep "\." ) ; 
  webcontainers=$(for i in $containers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i) ; echo $imagetype |grep -q -e ^mariadb -e _cron$ -e memcached -e _database -e piwik-cron -e nginx-gen -e nginx-letsencrypt -e nginx-proxy && (echo will not proc $i"     "  >&2)|| ( echo -en "$i ";) ; done)
- (for i in $webcontainers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i)  ;echo $imagetype | grep -q nginx-redirect && ( echo "R@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@"$(docker exec $i printenv SERVER_REDIRECT_SCHEME)"://"$(docker exec $i printenv SERVER_REDIRECT)$(docker exec $i printenv SERVER_REDIRECT_PATH)) ||  ( echo "H@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@"$(docker exec $i printenv SSH_PORT)) ; done > /tmp/vhostconf.domainlist)
+ (for i in $webcontainers;do imagetype=$(docker inspect --format '{{.Config.Image}}' $i)  ;echo $imagetype | grep -q nginx-redirect && ( echo "R@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@@"$(docker exec $i printenv SERVER_REDIRECT_SCHEME)"://"$(docker exec $i printenv SERVER_REDIRECT)$(docker exec $i printenv SERVER_REDIRECT_PATH)) ||  ( echo "H@"$i"@"$(docker exec $i printenv VIRTUAL_HOST)"@"$(docker exec $i printenv SSH_PORT)) ; done > /tmp/vhostconf.domainlist)
  
 #cat /tmp/vhostconf.domainlist
 echo ; } ;
@@ -61,7 +61,22 @@ if [ "$type" == "H" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f
 if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' $url -o /dev/null 2>&1); target=$(curl -Ls -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done 
 }
 statusobject="$(statusgetter)"
-echo "$statusobject";
+statuslength=$(echo "$statusobject"|wc -l)
+#w2ui json init
+echo '{';echo '"total":'${statuslength}",";echo '"records": [';
+#entry gen
+(
+count=1;
+echo "$statusobject" |while read entry;do 
+	echo '{ "recid": '${count}', "type": "'
+	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status: \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" },"}';
+	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
+	let count++;
+	done
+echo -e "\t"']';echo '}';
+) >  /tmp/.domainhealth-www/domainlist.json
+
+
 status
 
 wait
