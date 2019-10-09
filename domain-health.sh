@@ -28,9 +28,7 @@ _vhost_extract_apache() {
 						ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker exec $host printenv SSH_PORT))
 						echo $redir"@"$host"@"$vhostfield"@"$ssh_port
 	done > /tmp/vhostconf.domainlist
-
-
-	}
+}
 	
 _vhost_extract_nginx() {
 	containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer );
