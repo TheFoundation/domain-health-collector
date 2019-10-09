@@ -64,7 +64,6 @@ statusobject="$(statusgetter)"
 statuslength=$(echo "$statusobject"|wc -l)
 
 (
-
 #w2ui json init
 count=1;
 echo '{';echo '"total":'${statuslength}",";echo '"records": [';
