@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/vitmalina/w2ui@master/dist/w2ui.min.css" />
 </head>
 <body>
-<div id="grid" style="width: 100%; height: 350px; overflow: hidden;"></div>
+<div id="grid" style="width: 100%; height: 666px; overflow: hidden;"></div>
 <script type="text/javascript">
 $(function () {
     $('#grid').w2grid({ 
@@ -19,7 +19,7 @@ $(function () {
         method: 'GET', // need this to avoid 412 error on Safari
         columns: [	                
             { field: 'type', caption: 'Type', size: '10px', sortable: true },
-            { field: 'status', caption: 'Status Code', size: '10%', sortable: true },
+            { field: 'status', caption: 'Status Code', size: '30px, sortable: true },
             { field: 'vhost', caption: 'VHOST', size: '30%', sortable: true },
             { field: 'ssh', caption: 'ssh_port', size: '60px', sortable: true },
             { field: 'redirect', caption: 'Redirect Target', size: '40%', sortable: true },
