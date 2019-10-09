@@ -69,7 +69,7 @@ count=1;
 echo '{';echo '"total": '${statuslength}",";echo '"records": [';
 #entry gen
 echo "$statusobject" |while read entry;do 
-	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status: \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
+	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
 	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
 	let count++;
 	done
