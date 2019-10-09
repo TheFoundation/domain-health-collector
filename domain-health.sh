@@ -62,11 +62,13 @@ if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f
 }
 statusobject="$(statusgetter)"
 statuslength=$(echo "$statusobject"|wc -l)
+
+(
+
 #w2ui json init
+count=1;
 echo '{';echo '"total":'${statuslength}",";echo '"records": [';
 #entry gen
-(
-count=1;
 echo "$statusobject" |while read entry;do 
 	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status: \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" },"}';
 	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
