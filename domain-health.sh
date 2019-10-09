@@ -43,7 +43,6 @@ _vhost_extract_nginx() {
 done > /tmp/vhostconf.domainlist
 echo ; } ;
 
-
 _websrv_health_client() { 
  	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
