@@ -48,7 +48,7 @@ _websrv_health_client() {
 #
 test -d /tmp/.domain-health-lists/.git && ( cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-lists/; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ; cd /tmp/.domain-health-lists; git pull --recurse-submodules )
 for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git reset --hard origin/master;git pull ;done
-
+cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules
 
  #!! 500 ( internal server err) → contao no startpoint
  #!! 503 onlyoffice cant write
