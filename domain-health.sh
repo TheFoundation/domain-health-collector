@@ -20,7 +20,7 @@ _vhost_extract_apache() {
 	apachecfg="$(apache2ctl -S 2>/dev/null || apachectl -S 2>/dev/null)";
 
 	configlines=$(echo "$apachecfg"|grep -e namevhost -e "alias "|sed 's/.\+namevhost /@@/g;s/.\+ alias /:/g'|tr -d '\n'|sed 's/$/@@/g'|sed 's/@@/\n/g');
-	echo "$configlines"|while read cur_config; do 
+	echo "$configlines"|grep -v ^$|while read cur_config; do 
 						host=$(echo $cur_config|cut -d" " -f1);
 						conffile=$(echo $cur_config|cut -d"(" -f2 |cut -d":" -f1);
 						vhosts=$(echo $cur_config | cut -d")" -f2-|grep -v ^$|cut -d":" -f2-|sed 's/:/,/g' )
@@ -28,7 +28,7 @@ _vhost_extract_apache() {
 						redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
 						ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
 						echo $redir"@"$host"@"$vhostfield"@"$ssh_port
-	done > /tmp/vhostconf.domainlist
+	done |  awk '!x[$0]++' > /tmp/vhostconf.domainlist
 }
 	
 _vhost_extract_nginx() {
@@ -39,7 +39,7 @@ _vhost_extract_nginx() {
 	redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
 	ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
 	echo $redir"@"$host"@"$vhostfield"@"$ssh_port
-done > /tmp/vhostconf.domainlist
+done  |  awk '!x[$0]++' > /tmp/vhostconf.domainlist
 echo ; } ;
 
 _websrv_health_client() { 
