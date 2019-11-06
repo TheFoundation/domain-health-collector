@@ -4,6 +4,7 @@
 test -f ~/.domainhealth.conf || (echo "NO CONFIG";exit 3 )
 . ~/.domainhealth.conf
 
+_ssl_host_enddate_days() {     end="$(date +%Y-%m-%d --date="$( echo | openssl s_client -connect "$1" 2>/dev/null |openssl x509 -enddate -noout |cut -d= -f 2)" )"; date_diff=$(( ($(date -d "$end UTC" +%s) - $(date -d "$(date +%Y-%m-%d) UTC" +%s) )/(60*60*24) ));printf '%s: %s' "$date_diff" "$1" ; } ;
 
 _vhost_extract_docker() { 
 ##gen list
@@ -57,7 +58,7 @@ cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules
 statusgetter() {
 find /tmp/.domain-health-lists/ -name domainlist|while read listfile;do cat "$listfile";done  |grep -v -e "^H@@@$" -e "^R@@@$"|awk '!x[$0]++' |while read a ;do ( target="";type=${a/%@*/};
 if [ "$type" == "H" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1); http_stat=$(curl -sw '%{http_code}' https://$url -o /dev/null 2>&1);fi
-if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' $url -o /dev/null 2>&1); target=$(curl -I -L -s -S -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done 
+if [ "$type" == "R" ];then  url=$(echo $a|cut -d" " -f1|cut -d@ -f3|cut -d"," -f1);http_stat=$(curl -sw '%{http_code}' https://$url -o /dev/null 2>&1); target=$(curl -I -L -s -S -w %{url_effective} -o /dev/null $url) ; fi; echo $http_stat"@"$a"@"$target ) & done 
 }
 statusobject="$(statusgetter)"
 statuslength=$(echo "$statusobject"|wc -l)
@@ -68,7 +69,8 @@ count=1;
 echo '{';echo '"total": '${statuslength}",";echo '"records": [';
 #entry gen
 echo "$statusobject" |while read entry;do 
-	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status\": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
+	ssldays=$(_ssl_host_enddate_days $3":443" |cut -d":" -f1);
+	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status\": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"ssldays\": \""$ssldays"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
 	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
 	let count++;
 	done
