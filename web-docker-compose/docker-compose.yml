@@ -23,6 +23,7 @@ services:
 
         volumes:
           - /tmp/.domainhealth-www:/var/www/html/:ro
+          - ./index.html:/var/www/html/index.html:ro
 
 
 
