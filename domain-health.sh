@@ -70,7 +70,7 @@ echo '{';echo '"total": '${statuslength}",";echo '"records": [';
 #entry gen
 echo "$statusobject" |while read entry;do 
 	ssldays=$(_ssl_host_enddate_days $3":443" |cut -d":" -f1);
-	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status\": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"ssldays\": \""$ssldays"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
+	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status\": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"ssldays\": \""'${ssldays}'"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
 	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
 	let count++;
 	done
