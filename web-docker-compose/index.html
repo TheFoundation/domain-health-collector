@@ -16,15 +16,24 @@ $(function () {
         toolbar: true,
         footer: true
     },
+        multiSearch: true,
         method: 'GET', // need this to avoid 412 error on Safari
+
+        searches: [
+            { field: 'vhost', caption: 'url', type: 'text', operator: 'contains' },
+            { field: 'alias', caption: 'Aliases', type: 'text', operator: 'contains' },
+            { field: 'redirect', caption: 'redirect target', type: 'text', operator: 'contains' },
+            { field: 'vhost', caption: 'ID ', type: 'text', operator: 'contains' },
+            { field: 'ssh', caption: 'ssh port', type: 'int', operator: 'contains' }
+	],
         columns: [	                
             { field: 'type', caption: 'Type', size: '10px', sortable: true },
             { field: 'status', caption: 'Status Code', size: '30px', sortable: true },
+            { field: 'ssldays', caption: 'ssl cert days', size: '30px', sortable: true },
             { field: 'vhost', caption: 'VHOST', size: '30%', sortable: true },
             { field: 'ssh', caption: 'ssh_port', size: '60px', sortable: true },
-            { field: 'ssldays', caption: 'ssh cert days', size: '20px', sortable: true },
             { field: 'redirect', caption: 'Redirect Target', size: '40%', sortable: true },
-            { field: 'alias', caption: 'Alternate Vhosts', size: '40%', sortable: true }
+            { field: 'alias', caption: 'All Vhosts', size: '40%', sortable: true }
         ]
     });    
     w2ui['grid'].load('domainlist.json');
