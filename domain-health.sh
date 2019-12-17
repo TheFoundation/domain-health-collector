@@ -33,12 +33,12 @@ _vhost_extract_apache() {
 }
 	
 _vhost_extract_nginx() {
-	containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer );
- cat /etc/nginx/sites-enabled/*|sed 's/^\( \|\t\)\+#.\#//g;s/#.\+//g'|grep -v ^$|sed 's/server /@@server /g;s/^/→→/g'|tr -d '\n'|sed 's/@@/\n/g'|grep "listen 443" |sed 's/→→/\n/g'|grep -e "server " -e server_name |sed 's/\;.\+//g'|sed 's/server /@@server /g'|tr -d '\n'|sed 's/@@/\n/g'|grep -v ^$|sed 's/^server {//g;s/^\( \|\t\)\+//g;s/server_name//;s/;//g'|while read vhosts ;do 
+	which docker 2>/dev/null && containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer );
+	cat /etc/nginx/sites-enabled/*|sed 's/^\( \|\t\)\+#.\#//g;s/#.\+//g'|grep -v ^$|sed 's/server /@@server /g;s/^/→→/g'|tr -d '\n'|sed 's/@@/\n/g'|grep "listen 443" |sed 's/→→/\n/g'|grep -e "server " -e server_name |sed 's/\;.\+//g'|sed 's/server /@@server /g'|tr -d '\n'|sed 's/@@/\n/g'|grep -v ^$|sed 's/^server {//g;s/^\( \|\t\)\+//g;s/server_name//;s/;//g'|while read vhosts ;do 
 	vhostfield=$(echo $vhosts|sed 's/ \+/ /g;s/ /,/g');
 	host=$(echo "$vhosts"|sed 's/ /\n/g'|grep -v "*"|head -n1);
 	redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
-	ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
+	which docker 2>/dev/null && ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
 	echo $redir"@"$host"@"$vhostfield"@"$ssh_port
 done  |  awk '!x[$0]++' > /tmp/vhostconf.domainlist
 echo ; } ;
