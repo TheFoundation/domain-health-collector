@@ -106,14 +106,16 @@ _host_extract() {
 		              _vhost_extract_nginx ;;
 		
 		esac
-		test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
+
+#		test -d /tmp/domainlist-$(hostname -f) || mkdir /tmp/domainlist-$(hostname -f)
 #		test -d /tmp/domainlist-$(hostname -f) && ( 
 #		test -d /tmp/domainlist-$(hostname -f)/.git && rm -rf /tmp/domainlist-$(hostname -f)/.git 
 #		cd /tmp/domainlist-$(hostname -f); 
 #		git init
 #		git remote add origin $HOST_GIT_REPO
 
-		test -d /tmp/domainlist-$(hostname -f)/.git && rm -rf /tmp/domainlist-$(hostname -f)/
+		test -d /tmp/domainlist-$(hostname -f)/ && rm -rf /tmp/domainlist-$(hostname -f)/
+
 		git clone $HOST_GIT_REPO /tmp/domainlist-$(hostname -f)/ &&  ( cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist )
 		cd /tmp/domainlist-$(hostname -f) &&	git add domainlist && 	git commit -am $(hostname -f)"domain list "$(date -u +%Y-%m-%d-%H.%M) && git config user.name domainlist@$(hostname -f) && git push -f origin master	
 
