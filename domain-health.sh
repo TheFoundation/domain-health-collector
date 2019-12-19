@@ -114,8 +114,9 @@ _host_extract() {
 #		git remote add origin $HOST_GIT_REPO
 
 		test -d /tmp/domainlist-$(hostname -f)/.git && rm -rf /tmp/domainlist-$(hostname -f)/
-		git clone $HOST_GIT_REPO /tmp/domainlist-$(hostname -f)/ && cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist
-		cd /tmp/domainlist-$(hostname -f) &&	git add domainlist && 	git commit -am $(hostname -f)"domain list "$(date -u +%Y-%m-%d-%H.%M) && git config user.name domainlist@$(hostname -f) && git push -f origin master	)
+		git clone $HOST_GIT_REPO /tmp/domainlist-$(hostname -f)/ &&  ( cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist )
+		cd /tmp/domainlist-$(hostname -f) &&	git add domainlist && 	git commit -am $(hostname -f)"domain list "$(date -u +%Y-%m-%d-%H.%M) && git config user.name domainlist@$(hostname -f) && git push -f origin master	
+
 		echo -n ; } ;
 
 case "$1" in 
