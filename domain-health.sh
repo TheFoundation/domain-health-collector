@@ -52,7 +52,13 @@ test -d /tmp/.domain-health-lists/ || ( rm -rf /tmp/.domain-health-lists ; mkdir
 
 cd /tmp/.domain-health-lists &&  ( cat /tmp/.domain-health-list/repolist  | while read repository ;do git clone "$repository" ;done) 
 
+cd /tmp/;
+
+### if force-push happened , pull from beginning
+ for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git update-ref -d HEAD;git rm -fr .;git pull ;done
+
 # for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git reset --hard origin/master;git pull ;done
+# for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git pull ;done
 # cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules
 
  #!! 500 ( internal server err) → contao no startpoint , cache failures, php code errors etc.
