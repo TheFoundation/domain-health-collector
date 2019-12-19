@@ -47,11 +47,15 @@ _websrv_health_client() {
  	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
 #
-test -d /tmp/.domain-health-lists/.git && ( cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-lists/; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ; cd /tmp/.domain-health-lists; git pull --recurse-submodules )
-for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git reset --hard origin/master;git pull ;done
-cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules
+test -d /tmp/.domain-health-list/.git && ( cd /tmp/.domain-health-list/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-list/; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ; cd /tmp/.domain-health-list; git pull --recurse-submodules )
+test -d /tmp/.domain-health-lists/ || ( rm -rf /tmp/.domain-health-lists ; mkdir /tmp/.domain-health-lists )
 
- #!! 500 ( internal server err) → contao no startpoint
+cd /tmp/.domain-health-lists &&  ( cat /tmp/.domain-health-list/repolist  | while read repository ;do git clone "$repository" ;done) 
+
+# for fold in /tmp/.domain-health-lists/domainlist-*;do cd $fold;git reset --hard origin/master;git pull ;done
+# cd /tmp/.domain-health-lists/ ; git pull --recurse-submodules
+
+ #!! 500 ( internal server err) → contao no startpoint , cache failures, php code errors etc.
  #!! 503 onlyoffice cant write
  #!! 503 Service Temporarily Unavailable
 #test status 
@@ -71,7 +75,7 @@ echo '{';echo '"total": '${statuslength}",";echo '"records": [';
 echo "$statusobject" |while read entry;do 
 	
 	ssldays=$(_ssl_host_enddate_days $(echo $entry|cut -d"@" -f 3)":443" |cut -d":" -f1);
-	echo "$entry"|awk -F @ '{print "{ \"recid\": 1, \"type\": \""$2"\", \"status\": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"ssldays\": \""'${ssldays}'"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
+	echo "$entry"|awk -F @ '{print "{ \"recid\": \""$count"\", \"type\": \""$2"\", \"status\": \""$1"\", \"vhost\": \""$3"\", \"ssh\": \""$5"\", \"ssldays\": \""'${ssldays}'"\", \"redirect\": \""$6"\", \"alias\": \""$4"\" }"}'|tr -d '\n';
 	[ $count  -ne $statuslength ] && echo "," ## no comma on last line
 	let count++;
 	done
