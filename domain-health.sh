@@ -47,7 +47,7 @@ _websrv_health_client() {
  	[ -z "$CLIENT_GIT_REPO" ] && ( echo "no target repo" ; exit 3 )
 
 #
-test -d /tmp/.domain-health-list/.git && ( cd /tmp/.domain-health-list/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-list/; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ; cd /tmp/.domain-health-lis; git pull --recurse-submodules )
+test -d /tmp/.domain-health-list/.git && ( cd /tmp/.domain-health-list/ ; git pull --recurse-submodules ) || (rm -rf /tmp/.domain-health-list/; git clone $CLIENT_GIT_REPO /tmp/.domain-health-lists ; cd /tmp/.domain-health-list; git pull --recurse-submodules )
 test -d /tmp/.domain-health-lists/ || ( rm -rf /tmp/.domain-health-lists ; mkdir /tmp/.domain-health-lists )
 
 cd /tmp/.domain-health-lists &&  ( cat /tmp/.domain-health-list/repolist  | while read repository ;do git clone "$repository" ;done) 
