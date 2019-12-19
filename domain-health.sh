@@ -33,7 +33,7 @@ _vhost_extract_apache() {
 }
 	
 _vhost_extract_nginx() {
-	which docker 2>/dev/null && containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer );
+	which docker >/dev/null && containers=$(docker ps --format '{{.Names}}' |grep -v -e nginx -e portainer );
 	cat /etc/nginx/sites-enabled/*|sed 's/^\( \|\t\)\+#.\#//g;s/#.\+//g'|grep -v ^$|sed 's/server /@@server /g;s/^/→→/g'|tr -d '\n'|sed 's/@@/\n/g'|grep "listen 443" |sed 's/→→/\n/g'|grep -e "server " -e server_name |sed 's/\;.\+//g'|sed 's/server /@@server /g'|tr -d '\n'|sed 's/@@/\n/g'|grep -v ^$|sed 's/^server {//g;s/^\( \|\t\)\+//g;s/server_name//;s/;//g'|while read vhosts ;do 
 	vhostfield=$(echo $vhosts|sed 's/ \+/ /g;s/ /,/g');
 	host=$(echo "$vhosts"|sed 's/ /\n/g'|grep -v "*"|head -n1);
