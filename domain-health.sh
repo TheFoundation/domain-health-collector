@@ -38,7 +38,7 @@ _vhost_extract_nginx() {
 	vhostfield=$(echo $vhosts|sed 's/ \+/ /g;s/ /,/g');
 	host=$(echo "$vhosts"|sed 's/ /\n/g'|grep -v "*"|head -n1);
 	redir=$((curl -sw "\n\n%{redirect_url}" "https://${host}" | tail -n 1|grep -q http ) && echo "R" || echo "H" )
-	which docker 2>/dev/null && ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
+	which docker >/dev/null && ssh_port=$(echo "$containers"|grep -q "^"$host"$" && echo -n $(docker port $host|grep ^22|wc -l|grep -q ^0$ ||docker inspect --format '22/tcp:{{ (index (index .NetworkSettings.Ports "22/tcp") 0).HostPort }}' $host | grep "22/tcp" |cut -d":" -f2))
 	echo $redir"@"$host"@"$vhostfield"@"$ssh_port
 done  |  awk '!x[$0]++' > /tmp/vhostconf.domainlist
 echo ; } ;
@@ -116,7 +116,7 @@ _host_extract() {
 
 		test -d /tmp/domainlist-$(hostname -f)/ && rm -rf /tmp/domainlist-$(hostname -f)/
 
-		git clone $HOST_GIT_REPO /tmp/domainlist-$(hostname -f)/ &&  ( cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist )
+		git clone $HOST_GIT_REPO /tmp/domainlist-$(hostname -f)/ && ( md5sum /tmp/vhostconf.domainlist /tmp/domainlist-$(hostname -f)/domainlist;cat /tmp/vhostconf.domainlist > /tmp/domainlist-$(hostname -f)/domainlist )
 		cd /tmp/domainlist-$(hostname -f) &&	git add domainlist && 	git commit -am $(hostname -f)"domain list "$(date -u +%Y-%m-%d-%H.%M) && git config user.name domainlist@$(hostname -f) && git push -f origin master	
 
 		echo -n ; } ;
